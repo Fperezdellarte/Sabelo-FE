@@ -55,10 +55,24 @@ const MyNews = () => {
     setNews(newsList);
   };
 
-  const deleteNews = async (newsId) => {
+ const deleteNews = async (newsId) => {
+  try {
+    const commentsRef = collection(db, 'comments');
+    const q = query(commentsRef, where('newsId', '==', newsId));
+    const commentsSnapshot = await getDocs(q);
+
+    const deletePromises = commentsSnapshot.docs.map(commentDoc =>
+      deleteDoc(doc(db, 'comments', commentDoc.id))
+    );
+    await Promise.all(deletePromises);
+
     await deleteDoc(doc(db, 'news', newsId));
+
     fetchMyNews();
-  };
+  } catch (error) {
+    console.error('Error eliminando noticia y comentarios:', error);
+  }
+};
 
   const editNews = (newsId) => {
     navigate(`/editor/edit-news/${newsId}`);
@@ -162,6 +176,16 @@ const MyNews = () => {
           rowsPerPage={rowsPerPage}
           rowsPerPageOptions={[rowsPerPage]}
         />
+        <Box sx={{ display: 'flex', justifyContent: isMobile ? 'center' : 'flex-end', mt: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate('/editor')}
+            size={isMobile ? 'medium' : 'large'}
+          >
+            Volver a Editor
+          </Button>
+        </Box>
       </Box>
     </Container>
   );

@@ -56,6 +56,13 @@ const AdminPage = () => {
     fetchUsers();
   };
 
+    const toggleMarketing = async (userId, currentValue) => {
+    await updateDoc(doc(db, 'users', userId), {
+      marketing: !currentValue
+    });
+    fetchUsers();
+  };
+
   const deleteUser = async (userId) => {
     await deleteDoc(doc(db, 'users', userId));
     fetchUsers();
@@ -94,6 +101,7 @@ const AdminPage = () => {
                 <TableCell>Nombre</TableCell>
                 <TableCell>Admin</TableCell>
                 <TableCell>Editor</TableCell>
+                <TableCell>Marketing</TableCell>
                 <TableCell>Acciones</TableCell>
               </TableRow>
             </TableHead>
@@ -112,6 +120,12 @@ const AdminPage = () => {
                     <Switch
                       checked={user.editor || false}
                       onChange={() => toggleEditor(user.id, user.editor)}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Switch
+                      checked={user.marketing || false}
+                      onChange={() => toggleMarketing(user.id, user.marketing)}
                     />
                   </TableCell>
                   <TableCell>
@@ -138,8 +152,6 @@ const AdminPage = () => {
           rowsPerPage={rowsPerPage}
           rowsPerPageOptions={[rowsPerPage]}
         />
-
-        {/* Botón de navegación */}
         <Box sx={{ display: 'flex', justifyContent: isMobile ? 'center' : 'flex-end', mt: 2 }}>
           <Button
             variant="contained"

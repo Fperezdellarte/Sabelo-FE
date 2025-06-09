@@ -13,10 +13,7 @@ import FormatItalicIcon from '@mui/icons-material/FormatItalic';
 import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
-import ImageIcon from '@mui/icons-material/Image';
-import FormatAlignLeftIcon from '@mui/icons-material/FormatAlignLeft';
-import FormatAlignCenterIcon from '@mui/icons-material/FormatAlignCenter';
-import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight';
+import ImageIcon from '@mui/icons-material/Image';  
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ImageSizeDropdown from './ImageSizeDropdown'; 
 
@@ -83,12 +80,6 @@ const EditorToolbar = ({ editor }) => {
       <ButtonGroup variant="outlined">
         <Button onClick={() => editor.chain().focus().toggleBulletList().run()}><FormatListBulletedIcon /></Button>
         <Button onClick={() => editor.chain().focus().toggleOrderedList().run()}><FormatListNumberedIcon /></Button>
-      </ButtonGroup>
-
-      <ButtonGroup variant="outlined">
-        <Button onClick={() => editor.chain().focus().setTextAlign('left').run()}><FormatAlignLeftIcon /></Button>
-        <Button onClick={() => editor.chain().focus().setTextAlign('center').run()}><FormatAlignCenterIcon /></Button>
-        <Button onClick={() => editor.chain().focus().setTextAlign('right').run()}><FormatAlignRightIcon /></Button>
       </ButtonGroup>
 
       <Button variant="outlined" onClick={handleImageUpload} startIcon={<ImageIcon />}>

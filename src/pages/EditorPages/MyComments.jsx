@@ -24,10 +24,13 @@ import {
   useMediaQuery
 } from '@mui/material';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const MyComments = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [comments, setComments] = useState([]);
+  const [news, setNews] = useState([]);
   const [page, setPage] = useState(0);
   const rowsPerPage = 5;
 
@@ -42,7 +45,13 @@ const MyComments = () => {
       where('userId', '==', user.uid)
     );
     const newsSnapshot = await getDocs(newsQuery);
-    const newsIds = newsSnapshot.docs.map((doc) => doc.id);
+    const newsItem = newsSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    setNews(newsItem);
+
+    const newsIds = newsItem.map((doc) => doc.id);
 
     if (newsIds.length === 0) {
       setComments([]);
@@ -71,6 +80,7 @@ const MyComments = () => {
     );
     setComments(sorted);
   };
+
 
   const deleteComment = async (commentId) => {
     await deleteDoc(doc(db, 'comments', commentId));
@@ -108,6 +118,7 @@ const MyComments = () => {
           <Table size={isMobile ? 'small' : 'medium'}>
             <TableHead>
               <TableRow>
+                <TableCell>Noticia</TableCell>
                 <TableCell>Nombre</TableCell>
                 <TableCell>Comentario</TableCell>
                 <TableCell align="center">Acciones</TableCell>
@@ -116,6 +127,23 @@ const MyComments = () => {
             <TableBody>
               {paginatedComments.map((comment) => (
                 <TableRow key={comment.id}>
+                <TableCell>
+                  {(() => {
+                    const relatedNews = news.find(n => n.id === comment.newsId);
+                    return relatedNews?.image ? (
+                      <Box
+                        component="img"
+                        src={relatedNews.image}
+                        alt="noticia"
+                        sx={{
+                          width: { xs: 80, sm: 100 },
+                          height: 'auto',
+                          borderRadius: 1
+                        }}
+                      />
+                    ) : '—';
+                  })()}
+                </TableCell>
                   <TableCell>{comment.user}</TableCell>
                   <TableCell>{comment.text || '—'}</TableCell>
                   <TableCell align="center">
@@ -142,6 +170,16 @@ const MyComments = () => {
           rowsPerPage={rowsPerPage}
           rowsPerPageOptions={[rowsPerPage]}
         />
+        <Box sx={{ display: 'flex', justifyContent: isMobile ? 'center' : 'flex-end', mt: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate('/editor')}
+            size={isMobile ? 'medium' : 'large'}
+          >
+            Volver a Editor
+          </Button>
+        </Box>
       </Box>
     </Container>
   );

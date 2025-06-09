@@ -14,7 +14,8 @@ import MyComments from './pages/EditorPages/MyComments';
 import MyNews from './pages/EditorPages/MyNews';
 import EditNews from './pages/EditorPages/EditNews';
 import AllNews from './pages/AdminPages/AllNews';
-import AdsManager from './pages/AdminPages/AdsManager';
+import AdsManager from './pages/AdsManager';
+import MarketingRoute from './components/MarketingRoute';
 
 function App() {
   return (
@@ -28,7 +29,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
           <Route path="/admin/news" element={<AdminRoute><AllNews /></AdminRoute>} />
-          <Route path="/admin/ads" element={<AdminRoute><AdsManager /></AdminRoute>} />
+          <Route path="/ads" element={<MarketingRoute><AdsManager /></MarketingRoute>} />
           <Route path="/editor"element={<EditorRoute><EditorPage /></EditorRoute>}/>
           <Route path="/editor/update-news"element={<EditorRoute><UpdateNews /></EditorRoute>}/>
           <Route path="/editor/my-comments"element={<EditorRoute><MyComments /></EditorRoute>}/>

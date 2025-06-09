@@ -258,13 +258,14 @@ const Comment = ({ comment, isRoot = false }) => {
   return (
     <Container
   sx={{
-    pt: { xs: 6, sm: 8, md: 10 },
+    pt: 3,
     px: { xs: 2, sm: 4, md: 6 },
     pb: 6,
     backgroundColor: 'rgba(236, 252, 249, 1)',
     borderRadius: '20px',
     mt: 6,
     maxWidth: 'md',
+    width: {lg:'100%', xs: '90%'},
   }}
 >
  <Box dangerouslySetInnerHTML={{ __html: news.title }} />

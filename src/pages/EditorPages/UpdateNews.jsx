@@ -9,7 +9,11 @@ import {
   useTheme,
   Fab,
   Drawer,
-  IconButton
+  IconButton,
+  Select, 
+  MenuItem, 
+  InputLabel, 
+  FormControl 
 } from '@mui/material';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -38,6 +42,8 @@ const UpdateNews = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [activeEditor, setActiveEditor] = useState(null); 
+  const [category, setCategory] = useState('');
+
 
   const editor = useEditor({
     extensions: [
@@ -113,6 +119,7 @@ const UpdateNews = () => {
         image,
         createdAt: Timestamp.now(),
         userId: user?.uid || 'anónimo',
+        category: category || 'otros',
       });
 
       alert("Noticia publicada con éxito");
@@ -141,15 +148,14 @@ const UpdateNews = () => {
         }}
       >
         <Container
-          maxWidth="lg"
           sx={{
             mt: 5,
             backgroundColor: 'rgba(236, 252, 249, 1)',
             padding: 3,
             borderRadius: 2,
-            marginLeft: isMobile ? 0 : '5rem',
+            marginLeft: isMobile ? "1rem" : '5rem',
             marginRight: isMobile ? 0 : '5rem',
-            width: isMobile ? '100%' : '50%',
+            width: isMobile ? '90%' : '50%',
           }}
         >
           <Typography variant="h4" gutterBottom>
@@ -172,7 +178,21 @@ const UpdateNews = () => {
                   onFocus={() => setActiveEditor(titleEditor)}
                 />
               </Box>
-
+              <FormControl fullWidth>
+              <InputLabel id="category-label">Categoría</InputLabel>
+              <Select
+                labelId="category-label"
+                id="category-select"
+                value={category}
+                label="Categoría"
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                <MenuItem value="futbol">Fútbol</MenuItem>
+                <MenuItem value="basquet">Básquet</MenuItem>
+                <MenuItem value="rugby">Rugby</MenuItem>
+                <MenuItem value="otros">Otros</MenuItem>
+              </Select>
+            </FormControl>
               <Button variant="contained" component="label">
                 Subir imagen destacada
                 <input type="file" hidden accept="image/*" onChange={handleImageUpload} />

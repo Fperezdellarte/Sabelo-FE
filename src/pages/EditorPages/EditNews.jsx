@@ -10,6 +10,8 @@ import {
   Fab,
   Drawer,
   IconButton,
+  MenuItem,
+  TextField
 } from '@mui/material';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -33,6 +35,7 @@ const EditNews = () => {
 
   const [mainImage, setMainImage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [category, setCategory] = useState('');
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -74,6 +77,7 @@ const EditNews = () => {
       if (snap.exists()) {
         const data = snap.data();
         setMainImage(data.image || '');
+        setCategory(data.category || '');
         titleEditor?.commands.setContent(data.title || '');
         editor?.commands.setContent(data.content || '');
       } else {
@@ -91,7 +95,7 @@ const EditNews = () => {
   };
 
   const handleUpdate = async () => {
-    if (!titleEditor || !editor || !editor.getHTML()) {
+    if (!titleEditor || !editor || !editor.getHTML() || !category) {
       alert('Completá todos los campos.');
       return;
     }
@@ -128,6 +132,7 @@ const EditNews = () => {
         title: titleEditor.getHTML(),
         content: editor.getHTML(),
         image,
+        category,
       });
 
       alert('Noticia actualizada');
@@ -158,9 +163,9 @@ const EditNews = () => {
             backgroundColor: 'rgba(236, 252, 249, 0.7)',
             padding: 3,
             borderRadius: 2,
-            marginLeft: isMobile ? 0 : '5rem',
+            marginLeft: isMobile ? "1rem" : '5rem',
             marginRight: isMobile ? 0 : '5rem',
-            width: isMobile ? '100%' : '50%',
+            width: isMobile ? '90%' : '50%',
           }}
         >
           <Typography variant="h4" gutterBottom>
@@ -183,10 +188,25 @@ const EditNews = () => {
                   onFocus={() => setActiveEditor(titleEditor)}
                 />
               </Box>
+
+              <TextField
+                select
+                label="Categoría"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                fullWidth
+              >
+                <MenuItem value="Fútbol">Fútbol</MenuItem>
+                <MenuItem value="Básquet">Básquet</MenuItem>
+                <MenuItem value="Tenis">Tenis</MenuItem>
+                <MenuItem value="Polideportivo">Polideportivo</MenuItem>
+              </TextField>
+
               <Button variant="contained" component="label">
                 Subir imagen destacada
                 <input type="file" hidden accept="image/*" onChange={handleImageUpload} />
               </Button>
+
               {mainImage && (
                 <Box
                   component="img"
@@ -195,9 +215,11 @@ const EditNews = () => {
                   sx={{ width: '100%', borderRadius: 2, opacity: 0.8 }}
                 />
               )}
+
               <Box sx={{ border: '1px solid #ccc', borderRadius: 2, p: 2, minHeight: 300 }}>
                 <EditorContent editor={editor} onFocus={() => setActiveEditor(editor)} />
               </Box>
+
               <LoadingButton
                 variant="contained"
                 color="primary"

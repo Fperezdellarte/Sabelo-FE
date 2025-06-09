@@ -17,17 +17,27 @@ import Logo from '../assets/logonavbar.jpeg';
 import { useAuth } from '../context/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '../config/firebase';
+import CircularProgress from '@mui/material/CircularProgress'; 
+
+
 
 function Navbar() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-
   const [anchorEl, setAnchorEl] = useState(null);
   const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
-
+  if (loading) {
+    return (
+      <AppBar position="static" sx={{ backgroundColor: '#000' }}>
+        <Toolbar sx={{ justifyContent: 'center' }}>
+          <CircularProgress sx={{ color: 'white' }} />
+        </Toolbar>
+      </AppBar>
+    );
+  }
   const handleLogout = async () => {
     await signOut(auth);
     navigate('/login');
@@ -37,6 +47,7 @@ function Navbar() {
     { label: 'Inicio', path: '/' },
     { label: 'Nosotros', path: '/about' },
     user?.admin && { label: 'Admin', path: '/admin' },
+    user?.marketing && { label: 'Anuncios', path: '/ads' },
     user?.editor && { label: 'Editor', path: '/editor' }
   ].filter(Boolean);
 
