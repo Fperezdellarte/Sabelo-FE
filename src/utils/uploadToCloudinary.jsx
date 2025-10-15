@@ -2,7 +2,7 @@ export const uploadToCloudinary = async (file) => {
   const data = new FormData();
   data.append('file', file);
   data.append('upload_preset', process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET);
-  data.append('folder', process.env.REACT_APP_CLOUDINARY_FOLDER);
+  data.append('folder', "ads");
 
   try {
     const res = await fetch(
