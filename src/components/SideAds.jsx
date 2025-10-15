@@ -72,7 +72,7 @@ const SideAds = () => {
         <Box
           sx={{
             position: 'fixed',
-            top: 65,
+            top: 65 ,
             right: 0,
             width: '13%',
             zIndex: 999,

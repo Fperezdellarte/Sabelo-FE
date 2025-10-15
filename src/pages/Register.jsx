@@ -5,15 +5,18 @@ import {
   TextField,
   Typography,
   Fade,
-  Paper
+  Paper,
+  IconButton,
+  InputAdornment
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
 import { Link, useNavigate } from 'react-router-dom';
+import { LoadingButton } from '@mui/lab';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
-// ⬇️ Estilo personalizado que ya tenías
 const RegisterBox = styled(Paper)(({ theme }) => ({
   width: '80%',
   maxWidth: 400,
@@ -26,15 +29,12 @@ const RegisterBox = styled(Paper)(({ theme }) => ({
   transition: 'box-shadow 0.8s ease-in-out, transform 0.8s ease-in-out',
   willChange: 'transform, box-shadow',
   transformStyle: 'preserve-3d',
-  margin: "5%",
-
+  margin: '5%',
   '&:hover': {
     boxShadow: '0px 12px 30px rgba(0, 0, 0, 0.25)',
     transform: 'translateY(-4px)',
   },
 }));
-
-
 
 const Register = () => {
   const [form, setForm] = useState({
@@ -42,10 +42,15 @@ const Register = () => {
     name: '',
     password: '',
     confirmPassword: '',
+    photo: null,
   });
+  const [photoPreview, setPhotoPreview] = useState(null);
   const [errors, setErrors] = useState({});
   const [successMsg, setSuccessMsg] = useState('');
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const validate = () => {
     let valid = true;
@@ -56,7 +61,7 @@ const Register = () => {
       tempErrors.email = 'Email inválido o en uso';
     }
 
-    if (!/^[a-zA-Z\s]+$/.test(form.name)) {
+    if (!/^[a-zA-Z áéíóúÁÉÍÓÚñÑ\s]+$/.test(form.name)) {
       valid = false;
       tempErrors.name = 'Solo se permiten letras';
     }
@@ -75,12 +80,44 @@ const Register = () => {
     return valid;
   };
 
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setForm({ ...form, photo: file });
+      setPhotoPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const uploadPhotoToCloudinary = async (file) => {
+    const data = new FormData();
+    data.append('file', file);
+    data.append('upload_preset', 'sabelo_upload');
+    data.append('folder', 'users'); 
+
+    const res = await fetch('https://api.cloudinary.com/v1_1/dmhzoafnw/image/upload', {
+      method: 'POST',
+      body: data,
+    });
+    const result = await res.json();
+    return result.secure_url;
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setSuccessMsg('');
-    if (!validate()) return;
+    setLoading(true);
+
+    if (!validate()) {
+      setLoading(false);
+      return;
+    }
 
     try {
+      let photoURL = null;
+      if (form.photo) {
+        photoURL = await uploadPhotoToCloudinary(form.photo);
+      }
+
       const userCredential = await createUserWithEmailAndPassword(auth, form.email, form.password);
       const user = userCredential.user;
 
@@ -89,7 +126,8 @@ const Register = () => {
         email: form.email,
         admin: false,
         editor: false,
-        createdAt: new Date()
+        photoURL: photoURL || null,
+        createdAt: new Date(),
       });
 
       setSuccessMsg('¡Registro exitoso!');
@@ -98,14 +136,19 @@ const Register = () => {
         name: '',
         password: '',
         confirmPassword: '',
+        photo: null,
       });
+      setPhotoPreview(null);
+
       setTimeout(() => {
         navigate('/login');
       }, 1500);
       setErrors({});
+      setLoading(false);
     } catch (error) {
       console.error(error);
-      setErrors({ firebase: error.message }); //cambiar por un mensaje entendible
+      setErrors({ firebase: error.message });
+      setLoading(false);
     }
   };
 
@@ -139,32 +182,70 @@ const Register = () => {
               error={!!errors.name}
               helperText={errors.name}
               style={{ backgroundColor: 'rgba(255, 255, 255, 0.68)' }}
-              
             />
+
             <TextField
               fullWidth
               label="Contraseña"
               placeholder="Mínimo 8 caracteres, 1 mayúscula"
               margin="normal"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               error={!!errors.password}
               helperText={errors.password}
               style={{ backgroundColor: 'rgba(255, 255, 255, 0.68)' }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setShowPassword((prev) => !prev)} edge="end">
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               fullWidth
               label="Repetir Contraseña"
-              placeholder="Las contraseñas deben coincidir" 
+              placeholder="Las contraseñas deben coincidir"
               margin="normal"
-              type="password"
+              type={showConfirmPassword ? 'text' : 'password'}
               value={form.confirmPassword}
               onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
               error={!!errors.confirmPassword}
               helperText={errors.confirmPassword}
               style={{ backgroundColor: 'rgba(255, 255, 255, 0.68)' }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setShowConfirmPassword((prev) => !prev)} edge="end">
+                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
+              <Box mt={2} textAlign="center">
+                <Button variant="outlined" component="label">
+                  {form.photo ? 'Cambiar foto' : 'Subir foto de perfil'}
+                  <input hidden accept="image/*" type="file" onChange={handlePhotoChange} />
+                </Button>
+                {photoPreview && (
+                  <Box mt={2}>
+                    <img
+                      src={photoPreview}
+                      alt="Preview"
+                      style={{
+                        width: '80px',
+                        height: '80px',
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                      }}
+                    />
+                  </Box>
+                )}
+              </Box>
 
             {errors.firebase && (
               <Typography color="error" variant="body2" mt={1}>
@@ -176,16 +257,18 @@ const Register = () => {
                 {successMsg}
               </Typography>
             )}
+
             <Box mt={2} textAlign="center">
               <Typography variant="body2">
                 <Link to="/login" style={{ textDecoration: 'none', color: '#1976d2' }}>
-                ¿Ya tenés una cuenta?{' '}
+                  ¿Ya tenés una cuenta?{' '}
                 </Link>
               </Typography>
             </Box>
-            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
+
+            <LoadingButton type="submit" fullWidth variant="contained" sx={{ mt: 3 }} loading={loading}>
               Registrarse
-            </Button>
+            </LoadingButton>
           </form>
         </RegisterBox>
       </Fade>

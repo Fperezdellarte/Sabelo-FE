@@ -39,7 +39,7 @@ function Home() {
           component="img"
           src={logohome}
           alt="Imagen principal"
-          sx={{ width: '100%', maxWidth: { xl: '1200px', lg: "800px", md: "500px", xs: "300px" }, height: 'auto', mt: 8 }}
+          sx={{ width: '100%', maxWidth: { xl: '1000px', lg: "600px", md: "300px", xs: "100px" }, height: 'auto', mt: 8 }}
         />
       </Box>
 
@@ -51,7 +51,7 @@ function Home() {
         ) : (
           <Grid container spacing={2}>
             {categories.map((cat) => (
-              <Grid item xs={12} md={3} key={cat} sx={{ backgroundColor: 'rgba(22, 105, 101, 0.2)', borderRadius: 2, p: 2, mb: 2, maxWidth: {md:'20%'} }}>
+              <Grid item xs={12} md={3} key={cat} sx={{ backgroundColor: 'rgba(173, 173, 173, 0.55)', borderRadius: 2, p: 2, mb: 2, maxWidth: {md:'20%'} }}>
                 <Typography variant="h6" align="center" sx={{ mb: 2, textTransform: 'capitalize', color: 'white' }}>
                   {cat}
                 </Typography>

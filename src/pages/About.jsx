@@ -1,4 +1,5 @@
 import React from 'react';
+import aboutus from '../assets/aboutus.png';
 import {
   Box,
   Grid,
@@ -37,6 +38,12 @@ const About = () => {
             <Typography variant="h5" gutterBottom fontWeight="bold">
               Sobre Sabelo Deportivamente
             </Typography>
+            <Box
+              component="img"
+              src={aboutus}
+              alt="Imagen Equipo"
+              sx={{ width: '100%', maxWidth: { xl: '1000px', lg: "600px", md: "300px", xs: "100px" }, height: 'auto', mb: 2 }}
+            />
             <Typography>
               Sabelo Deportivamente es un portal de noticias deportivas originado
               desde la pasión de la radio tucumana. Brindamos información veraz y

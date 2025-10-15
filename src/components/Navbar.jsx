@@ -17,9 +17,8 @@ import Logo from '../assets/logonavbar.jpeg';
 import { useAuth } from '../context/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '../config/firebase';
-import CircularProgress from '@mui/material/CircularProgress'; 
-
-
+import CircularProgress from '@mui/material/CircularProgress';
+import EditUserModal from './EditUserModal';
 
 function Navbar() {
   const { user, loading } = useAuth();
@@ -27,8 +26,11 @@ function Navbar() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [anchorEl, setAnchorEl] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+
   const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
+
   if (loading) {
     return (
       <AppBar position="static" sx={{ backgroundColor: '#000' }}>
@@ -38,6 +40,7 @@ function Navbar() {
       </AppBar>
     );
   }
+
   const handleLogout = async () => {
     await signOut(auth);
     navigate('/login');
@@ -46,6 +49,7 @@ function Navbar() {
   const navItems = [
     { label: 'Inicio', path: '/' },
     { label: 'Nosotros', path: '/about' },
+    { label: 'Radio', href: 'https://radiotucuman.com.ar/envivo/' },
     user?.admin && { label: 'Admin', path: '/admin' },
     user?.marketing && { label: 'Anuncios', path: '/ads' },
     user?.editor && { label: 'Editor', path: '/editor' }
@@ -59,125 +63,180 @@ function Navbar() {
     : [];
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: '#000',}}>
-      <Toolbar sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+    <>
+      <AppBar position="static" sx={{ backgroundColor: '#000' }}>
+        <Toolbar sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          {/* Logo + navegación */}
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Link to="/" style={{ textDecoration: 'none' }}>
+              <img src={Logo} alt="Logo" style={{ height: '40px', marginRight: 16 }} />
+            </Link>
 
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Link to="/" style={{ textDecoration: 'none' }}>
-            <img src={Logo} alt="Logo" style={{ height: '40px', marginRight: 16 }} />
-          </Link>
+            {!isMobile && (
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                {navItems.map(({ label, path, href }) =>
+                  href ? (
+                    <Button
+                      key={label}
+                      component="a"
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      sx={{
+                        color: 'white',
+                        fontWeight: 'bold',
+                        textTransform: 'uppercase'
+                      }}
+                    >
+                      {label}
+                    </Button>
+                  ) : (
+                    <Button
+                      key={label}
+                      component={Link}
+                      to={path}
+                      sx={{
+                        color: 'white',
+                        fontWeight: 'bold',
+                        textTransform: 'uppercase'
+                      }}
+                    >
+                      {label}
+                    </Button>
+                  )
+                )}
+              </Box>
+            )}
+          </Box>
 
-          {!isMobile && (
-            <Box sx={{ display: 'flex', gap: 2}}>
-              {navItems.map(({ label, path }) => (
-                <Button
-                  key={label}
-                  component={Link}
-                  to={path}
-                  sx={{
-                    color: 'white',
-                    fontWeight: 'bold',
-                    textTransform: 'uppercase'
+          {/* Botones de sesión o menú móvil */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, padding: '0 16px' }}>
+            {isMobile ? (
+              <>
+                <IconButton
+                  edge="end"
+                  color="inherit"
+                  aria-label="menu"
+                  onClick={handleMenuOpen}
+                >
+                  <MenuIcon />
+                </IconButton>
+                <Menu
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
+                  onClose={handleMenuClose}
+                  PaperProps={{
+                    sx: {
+                      backgroundColor: '#000',
+                      color: 'white'
+                    }
                   }}
                 >
-                  {label}
-                </Button>
-              ))}
-            </Box>
-          )}
-        </Box>
-
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, padding: '0 16px' }}>
-          {isMobile ? (
-            <>
-              <IconButton
-                edge="end"
-                color="inherit"
-                aria-label="menu"
-                onClick={handleMenuOpen}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Menu
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleMenuClose}
-                PaperProps={{
-                  sx: {
-                    backgroundColor: '#000',
-                    color: 'white'
-                  }
-                }}
-              >
-                {navItems.map(({ label, path }) => (
-                  <MenuItem
-                    key={label}
-                    component={Link}
-                    to={path}
-                    onClick={handleMenuClose}
-                    sx={{ color: 'white' }}
-                  >
-                    {label}
-                  </MenuItem>
-                ))}
-                {authItems.map(({ label, path }) => (
-                  <MenuItem
-                    key={label}
-                    component={Link}
-                    to={path}
-                    onClick={handleMenuClose}
-                    sx={{ color: 'white' }}
-                  >
-                    {label}
-                  </MenuItem>
-                ))}
-                {user && (
-                  <>
+                  {navItems.map(({ label, path, href }) =>
+                    href ? (
+                      <MenuItem
+                        key={label}
+                        component="a"
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={handleMenuClose}
+                        sx={{ color: 'white' }}
+                      >
+                        {label}
+                      </MenuItem>
+                    ) : (
+                      <MenuItem
+                        key={label}
+                        component={Link}
+                        to={path}
+                        onClick={handleMenuClose}
+                        sx={{ color: 'white' }}
+                      >
+                        {label}
+                      </MenuItem>
+                    )
+                  )}
+                  {authItems.map(({ label, path }) => (
                     <MenuItem
-                      onClick={() => { handleLogout(); handleMenuClose(); }}
+                      key={label}
+                      component={Link}
+                      to={path}
+                      onClick={handleMenuClose}
                       sx={{ color: 'white' }}
                     >
-                      Cerrar sesión
+                      {label}
                     </MenuItem>
-                    <MenuItem disabled sx={{ color: 'white' }}>
+                  ))}
+                  {user && (
+                    <>
+                      <MenuItem
+                        onClick={() => {
+                          handleLogout();
+                          handleMenuClose();
+                        }}
+                        sx={{ color: 'white' }}
+                      >
+                        Cerrar sesión
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          handleMenuClose();
+                          setOpenModal(true);
+                        }}
+                        sx={{
+                          color: 'white',
+                          textDecoration: 'underline',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Hola, {user.name}
+                      </MenuItem>
+                    </>
+                  )}
+                </Menu>
+              </>
+            ) : (
+              <>
+                {user ? (
+                  <>
+                    <Typography
+                      sx={{
+                        backgroundColor: '#000',
+                        color: 'white',
+                        cursor: 'pointer',
+                        textDecoration: 'underline'
+                      }}
+                      onClick={() => setOpenModal(true)}
+                    >
                       Hola, {user.name}
-                    </MenuItem>
+                    </Typography>
+                    <Button
+                      onClick={handleLogout}
+                      sx={{ backgroundColor: '#000', color: 'white' }}
+                    >
+                      Cerrar sesión
+                    </Button>
                   </>
+                ) : (
+                  authItems.map(({ label, path }) => (
+                    <Button
+                      key={label}
+                      component={Link}
+                      to={path}
+                      sx={{ backgroundColor: '#000', color: 'white' }}
+                    >
+                      {label}
+                    </Button>
+                  ))
                 )}
-              </Menu>
-
-            </>
-          ) : (
-            <>
-              {user ? (
-                <>
-                  <Typography sx={{ backgroundColor: '#000', color: 'white' }}>
-                    Hola, {user.name}
-                  </Typography>
-                  <Button
-                    onClick={handleLogout}
-                    sx={{ backgroundColor: '#000', color: 'white' }}
-                  >
-                    Cerrar sesión
-                  </Button>
-                </>
-              ) : (
-                authItems.map(({ label, path }) => (
-                  <Button
-                    key={label}
-                    component={Link}
-                    to={path}
-                    sx={{ backgroundColor: '#000', color: 'white' }}
-                  >
-                    {label}
-                  </Button>
-                ))
-              )}
-            </>
-          )}
-        </Box>
-      </Toolbar>
-    </AppBar>
+              </>
+            )}
+          </Box>
+        </Toolbar>
+      </AppBar>
+      <EditUserModal open={openModal} onClose={() => setOpenModal(false)} />
+    </>
   );
 }
 
