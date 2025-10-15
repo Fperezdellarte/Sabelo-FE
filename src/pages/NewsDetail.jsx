@@ -307,7 +307,7 @@ const NewsDetail = () => {
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
             mb: 3,
             color: 'grey',
-            textSize: 'small',
+          
           }}
         >
           <Avatar

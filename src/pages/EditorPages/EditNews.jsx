@@ -114,10 +114,10 @@ const EditNews = () => {
       if (mainImage instanceof File) {
         const formData = new FormData();
         formData.append('file', mainImage);
-        formData.append('upload_preset', 'sabelo_upload');
-        formData.append('folder', 'news');
+        formData.append('upload_preset', process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET);
+        formData.append('folder', process.env.REACT_APP_CLOUDINARY_FOLDER);
 
-        const res = await fetch('https://api.cloudinary.com/v1_1/dmhzoafnw/image/upload', {
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
           method: 'POST',
           body: formData,
         });
