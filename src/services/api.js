@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3001/api'; // Cambia esto si tu API usa otro puerto
+const API_URL = 'https://sabelo-be.onrender.com/api'; 
 
 export const getNoticias = async () => {
   try {
