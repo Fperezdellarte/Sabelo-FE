@@ -40,7 +40,7 @@ const NewsDetail = () => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/api/news/${id}`)
+      .get(`https://sabelo-be.onrender.com/api/news/${id}`)
       .then((res) => setNews(res.data))
       .catch(() => setNews(null));
   }, [id]);
