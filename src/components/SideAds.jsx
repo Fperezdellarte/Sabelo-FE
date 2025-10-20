@@ -32,16 +32,27 @@ const SideAds = () => {
   const leftAd = getRandomAd();
   const rightAd = getRandomAd();
 
+  // ✅ Mobile: centrado sin overflow
   if (isMobile) {
     return rightAd ? (
-      <Box sx={{ width: '100%', mt: 4, mb: 2, display: 'flex', justifyContent: 'center', ml: 10 }}>
+      <Box
+        sx={{
+          width: '100%',
+          mt: 4,
+          mb: 2,
+          display: 'flex',
+          justifyContent: 'center',
+          overflowX: 'hidden', 
+        }}
+      >
         <a href={rightAd.link} target="_blank" rel="noopener noreferrer">
-          <img 
+          <img
             src={rightAd.image}
             alt="Publicidad"
             style={{
-              maxWidth: '70%',
-              height: '80%',
+              width: '100%',
+              maxWidth: 350,
+              height: 'auto',
               borderRadius: 8,
               boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
             }}
@@ -51,6 +62,7 @@ const SideAds = () => {
     ) : null;
   }
 
+  // ✅ Desktop: igual que antes
   return (
     <>
       {leftAd && (
@@ -58,13 +70,13 @@ const SideAds = () => {
           sx={{
             position: 'fixed',
             top: 65,
-            left: 0, 
+            left: 0,
             width: '13%',
             zIndex: 999,
           }}
         >
           <a href={leftAd.link} target="_blank" rel="noopener noreferrer">
-            <img src={leftAd.image} alt="Publicidad" style={{ maxWidth: "100%"}} />
+            <img src={leftAd.image} alt="Publicidad" style={{ maxWidth: '100%' }} />
           </a>
         </Box>
       )}
@@ -72,14 +84,14 @@ const SideAds = () => {
         <Box
           sx={{
             position: 'fixed',
-            top: 65 ,
+            top: 65,
             right: 0,
             width: '13%',
             zIndex: 999,
           }}
         >
           <a href={rightAd.link} target="_blank" rel="noopener noreferrer">
-            <img src={rightAd.image} alt="Publicidad" style={{ maxWidth: "100%" }} />
+            <img src={rightAd.image} alt="Publicidad" style={{ maxWidth: '100%' }} />
           </a>
         </Box>
       )}

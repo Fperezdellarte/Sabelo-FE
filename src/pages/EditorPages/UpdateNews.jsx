@@ -100,7 +100,7 @@ const UpdateNews = () => {
         formData.append('upload_preset', 'sabelo_upload');
         formData.append('folder', 'news');
 
-        const res = await fetch('https://api.cloudinary.com/v1_1/dmhzoafnw/image/upload', {
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}/image/upload`, {
           method: 'POST',
           body: formData,
         });
